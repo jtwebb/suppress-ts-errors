@@ -7,12 +7,22 @@ export const command: string[] = ["*", "ts"];
 export const desc = "Suppress TS errors in TypeScript files";
 
 export const builder = (yargs: Argv<DefaultOptions>): Argv<DefaultOptions> =>
-  yargs.options(DEFAULT_OPTIONS).check(tsconfigExists);
+  yargs
+    .options(DEFAULT_OPTIONS)
+    .positional("targetFilePaths", {
+      array: true,
+      type: "string",
+      demandOption: true,
+      description:
+        "Path to the target ts files, which can be set with the glob pattern. eg: 'src/**/*.ts'",
+    } as const)
+    .check(tsconfigExists);
 
 export const handler = (argv: Arguments<DefaultOptions>): void => {
-  const { commentType, tsconfigPath, errorCode } = argv;
+  const { targetFilePaths, commentType, tsconfigPath, errorCode } = argv;
 
   const insertedCommentCount = tsHandler({
+    targetFilePaths,
     tsconfigPath,
     commentType,
     errorCode,

@@ -1,8 +1,9 @@
 import { Project } from "ts-morph";
-import { generateProgressBar } from "../lib/progressBar";
+import { generateProgressBar } from "../lib/progressbar";
 import { suppressTsErrors } from "../lib/suppressTsErrors";
 
 export const tsHandler = ({
+  targetFilePaths,
   tsconfigPath,
   commentType,
   errorCode,
@@ -18,6 +19,11 @@ export const tsHandler = ({
   // Rewrite source in ts/tsx file with source with comment
   let insertedCommentCount = 0;
   for (const sourceFile of sourceFiles) {
+    if (!targetFilePaths.includes(sourceFile.getFilePath())) {
+      progressBar.increment();
+      continue;
+    }
+
     const { text: textWithComment, count: insertedCommentCountPerFile } =
       suppressTsErrors({
         sourceFile,
