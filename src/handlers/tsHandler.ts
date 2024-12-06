@@ -1,3 +1,4 @@
+import path from "node:path";
 import { Project } from "ts-morph";
 import { generateProgressBar } from "../lib/progressbar";
 import { suppressTsErrors } from "../lib/suppressTsErrors";
@@ -11,6 +12,9 @@ export const tsHandler = ({
   // Get all project files
   const project = new Project({ tsConfigFilePath: tsconfigPath });
   const sourceFiles = project.getSourceFiles();
+  const absoulteTargetFilePaths = targetFilePaths.map((targetFilePath) => {
+    return path.resolve(targetFilePath);
+  });
 
   // Initialize progress bar
   const progressBar = generateProgressBar();
@@ -19,7 +23,7 @@ export const tsHandler = ({
   // Rewrite source in ts/tsx file with source with comment
   let insertedCommentCount = 0;
   for (const sourceFile of sourceFiles) {
-    if (!targetFilePaths.includes(sourceFile.getFilePath())) {
+    if (!absoulteTargetFilePaths.includes(sourceFile.getFilePath())) {
       progressBar.increment();
       continue;
     }
